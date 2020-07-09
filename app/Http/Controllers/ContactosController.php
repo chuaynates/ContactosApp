@@ -46,7 +46,6 @@ class ContactosController extends Controller
         //
         $datosContacto=request()->except('_token');
         if($request->hasFile('Foto')){
-            $datosContacto['Foto']=$request->file('Foto')->store('my-filed','s3');
             $datosContacto['Foto']=$request->file('Foto')->store('uploads','public');
         }
         Contactos::insert($datosContacto);
@@ -73,7 +72,7 @@ class ContactosController extends Controller
      */
     public function edit($id)
     {
-        //
+        
         $contacto=Contactos::findOrFail($id);
         return view('contactos.edit',compact('contacto'));
     }
@@ -92,11 +91,9 @@ class ContactosController extends Controller
         if($request->hasFile('Foto')){
             $contacto=Contactos::findOrFail($id);
 
-           Storage::delete('public/'.$contacto->Foto);
-           $datosContacto['Foto']=$request->file('Foto')->store('uploads','public');
-        /*    Storage::delete('my-file'.$contacto->Foto);
-           $datosContacto['Foto']=$request->file('Foto')->store('my-filed','s3'); */
-         
+            Storage::delete('public/'.$contacto->Foto);
+
+            $datosContacto['Foto']=$request->file('Foto')->store('uploads','public');
         }
         Contactos::where('id','=',$id)->update($datosContacto);
         /* $contacto=Contactos::findOrFail($id);
@@ -112,12 +109,12 @@ class ContactosController extends Controller
      */
     public function destroy($id)
     {
-       /*  Contactos::destroy($id); */
-       $contacto = Contactos::findOrFail($id);
+        //
+        $contacto = Contactos::findOrFail($id);
         if(Storage::delete('public/'.$contacto->Foto)){
             Contactos::destroy($id);
-        } 
-
+        }
+       
         return redirect('contactos')->with('Mensaje','Contacto eliminado con éxito!');;
     }
 }
